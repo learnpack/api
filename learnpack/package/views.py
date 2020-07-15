@@ -19,8 +19,15 @@ def get_languages(request):
 
 @api_view(['GET'])
 def get_packages(request):
-    items = Package.objects.all()
-    serializer = GetPackageSerializer(items, many=True)
+    query = Package.objects.all()
+
+    if request.GET.get('language'):
+        query = query.filter(language=request.GET['language'])
+
+    if request.GET.get('technology'):
+        query = query.filter(technology=request.GET['technology'])
+
+    serializer = GetPackageSerializer(query, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
