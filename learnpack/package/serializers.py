@@ -38,7 +38,7 @@ class GetPackageSerializer(serpy.Serializer):
     #     language = Language.objects.filter(slug=obj.language_slug).first()
     #     return GetLanguage(language).data
 
-# class GetPackageSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Package
-#         exclude = ()
+class PostPackageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Package
+        exclude = ()
