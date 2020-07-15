@@ -1,14 +1,26 @@
 from django.shortcuts import render
-from .models import Package
-from .serializers import GetPackageSerializer
+from .models import Package, Technology, Language
+from .serializers import GetPackageSerializer, GetTechnologySerializer, GetLanguageSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status, exceptions
 
 @api_view(['GET'])
+def get_technologies(request):
+    items = Technology.objects.all()
+    serializer = GetTechnologySerializer(items, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def get_languages(request):
+    items = Language.objects.all()
+    serializer = GetLanguageSerializer(items, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
 def get_packages(request):
-    packages = Package.objects.all()
-    serializer = GetPackageSerializer(packages, many=True)
+    items = Package.objects.all()
+    serializer = GetPackageSerializer(items, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])

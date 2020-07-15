@@ -2,13 +2,17 @@ import serpy
 from .models import Package, Technology, Language
 from rest_framework import serializers
 
-class GetTechnology(serpy.Serializer):
+class GetTechnologySerializer(serpy.Serializer):
     title = serpy.Field()
     slug = serpy.Field()
-class GetLanguage(serpy.Serializer):
+    total_packages = serpy.Field()
+
+class GetLanguageSerializer(serpy.Serializer):
     title = serpy.Field()
     slug = serpy.Field()
-class GetAuthor(serpy.Serializer):
+    total_packages = serpy.Field()
+
+class GetAuthorSerializer(serpy.Serializer):
     first_name = serpy.Field()
     last_name = serpy.Field()
 
@@ -19,9 +23,9 @@ class GetPackageSerializer(serpy.Serializer):
     slug = serpy.Field()
     description = serpy.Field()
     repository = serpy.Field()
-    technology = GetTechnology()
-    language = GetLanguage()
-    author = GetAuthor()
+    technology = GetTechnologySerializer()
+    language = GetLanguageSerializer()
+    author = GetAuthorSerializer()
     # technology = serpy.MethodField()
     # language = serpy.MethodField()
 

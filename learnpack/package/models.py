@@ -38,6 +38,7 @@ class Package(models.Model):
 class Language(models.Model):
     slug = models.SlugField(max_length=15, primary_key=True)
     title = models.CharField(max_length=150)
+    total_packages = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.title
@@ -45,6 +46,7 @@ class Language(models.Model):
 class Technology(models.Model):
     slug = models.SlugField(max_length=15, primary_key=True)
     title = models.CharField(max_length=150)
+    total_packages = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.title
