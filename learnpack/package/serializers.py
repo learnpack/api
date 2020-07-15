@@ -8,6 +8,9 @@ class GetTechnology(serpy.Serializer):
 class GetLanguage(serpy.Serializer):
     title = serpy.Field()
     slug = serpy.Field()
+class GetAuthor(serpy.Serializer):
+    first_name = serpy.Field()
+    last_name = serpy.Field()
 
 class GetPackageSerializer(serpy.Serializer):
     """The serializer schema definition."""
@@ -16,15 +19,19 @@ class GetPackageSerializer(serpy.Serializer):
     slug = serpy.Field()
     description = serpy.Field()
     repository = serpy.Field()
+    technology = GetTechnology()
+    language = GetLanguage()
+    author = GetAuthor()
     # technology = serpy.MethodField()
     # language = serpy.MethodField()
 
     # def get_technology(self, obj):
-    #     technology = Technology.objects.get(slug=obj.technology_slug)
+    #     print(obj.technology_slug)
+    #     technology = Technology.objects.filter(slug=obj.technology_slug).first()
     #     return GetTechnology(technology).data
 
     # def get_language(self, obj):
-    #     language = Language.objects.get(slug=obj.language_slug)
+    #     language = Language.objects.filter(slug=obj.language_slug).first()
     #     return GetLanguage(language).data
 
 # class GetPackageSerializer(serializers.ModelSerializer):

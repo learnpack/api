@@ -25,9 +25,9 @@ class Package(models.Model):
     video_solutions = models.BooleanField(default=False)
     graded = models.BooleanField(default=False)
 
-    technology_slug = models.ForeignKey('Language',on_delete=models.SET_NULL,null=True)
-    language_slug = models.ForeignKey('Technology',on_delete=models.SET_NULL,null=True)
-    author_id = models.ForeignKey('auth.User',on_delete=models.CASCADE)
+    technology = models.ForeignKey('Language',on_delete=models.SET_NULL,null=True)
+    language = models.ForeignKey('Technology',on_delete=models.SET_NULL,null=True)
+    author = models.ForeignKey('auth.User',on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
