@@ -1,0 +1,17 @@
+image:
+  file: .gitpod.Dockerfile
+ports:
+    - port: 8080
+    - port: 5432
+tasks:
+    - name: Instalation
+      init: >
+        cp .env.example .env;
+    - name: Terminal
+      command: >
+        npm i -g heroku;
+        pipenv install;
+        psql -U gitpod -c 'CREATE DATABASE learnpack;';
+        psql -U gitpod -c 'CREATE EXTENSION unaccent;' -d learnpack;
+        pipenv run migrate;
+        pipenv run seed;
