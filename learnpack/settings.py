@@ -16,18 +16,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
+ENVIRONMENT = os.environ.get('ENV')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '5ar3h@ha%y*dc72z=8-ju7@4xqm0o59*@k*c2i=xacmy2r=%4a'
+SECRET_KEY = '5*06185ckvy&l#e(1lq5hi_1is544=t@#3rm5i4lht0bsq5@c!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -104,7 +102,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'learnpack.wsgi.application'
 
-
+CSRF_COOKIE_SECURE = True
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
@@ -149,7 +147,7 @@ LOGGING = {
     },
     'loggers': {
         'authenticate': {
-            'handlers': ['console'],
+            'handlers': ['console', "file"],
             'level': 'DEBUG',
             'propagate': True,
         },
@@ -173,9 +171,6 @@ USE_TZ = True
 # Change 'default' database configuration with $DATABASE_URL.
 DATABASES['default'].update(dj_database_url.config(conn_max_age=500, ssl_require=True))
 
-# Honor the 'X-Forwarded-Proto' header for request.is_secure()
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
 # Allow all host headers
 ALLOWED_HOSTS = ['*']
 
@@ -198,7 +193,13 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 SITE_ID=1
 
-ssl_require = os.getenv('ENV') != 'development'
+ssl_require = True
+if os.getenv('ENV') == 'development':
+    ssl_require = False
+else:
+    # Honor the 'X-Forwarded-Proto' header for request.is_secure()
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 _locals = locals()
 django_heroku.settings(_locals)
 _locals['DATABASES']['default'] = dj_database_url.config(conn_max_age=django_heroku.MAX_CONN_AGE, ssl_require=ssl_require)
