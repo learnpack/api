@@ -13,6 +13,7 @@ class GetLanguageSerializer(serpy.Serializer):
     total_packages = serpy.Field()
 
 class GetAuthorSerializer(serpy.Serializer):
+    username = serpy.Field()
     first_name = serpy.Field()
     last_name = serpy.Field()
 
@@ -23,8 +24,8 @@ class GetPackageSerializer(serpy.Serializer):
     slug = serpy.Field()
     description = serpy.Field()
     repository = serpy.Field()
-    technology = GetTechnologySerializer()
-    language = GetLanguageSerializer()
+    technology = GetTechnologySerializer(required= False)
+    language = GetLanguageSerializer(required = False)
     author = GetAuthorSerializer()
     # technology = serpy.MethodField()
     # language = serpy.MethodField()
@@ -41,4 +42,10 @@ class GetPackageSerializer(serpy.Serializer):
 class PostPackageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Package
-        exclude = ()
+        exclude = ("author",)
+    def create(self, validated_data):
+        validated_data["author"]=self.context['request'].user
+        print(self.context)
+        print(validated_data)
+        package = super(PostPackageSerializer, self).create(validated_data)
+        return package

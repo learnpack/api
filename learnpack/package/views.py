@@ -8,6 +8,8 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, exceptions
+from django.contrib.auth.models import User, Group, AnonymousUser
+from rest_framework.exceptions import APIException, ValidationError, PermissionDenied
 
 class PackageView(APIView):
     def get(self, request, slug):
@@ -32,8 +34,8 @@ class PackageView(APIView):
         package = Package.objects.filter(slug=slug).first()
         if package is not None:
             raise exceptions.NotFound(detail="Package already exists", code=status.HTTP_400_BAD_REQUEST)
-
-        serializer = PostPackageSerializer(data=request.data)
+        
+        serializer = PostPackageSerializer(data=request.data, context = {"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
