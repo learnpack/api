@@ -16,6 +16,8 @@ class PackageView(APIView):
         package = Package.objects.filter(slug=slug).first()
         if package is None:
             raise exceptions.NotFound(detail="Package not found", code=status.HTTP_404_NOT_FOUND)
+        if not request.user.is_authenticated:
+            raise exceptions.NotFound(detail="Package not found", code=status.HTTP_404_NOT_FOUND)
         serializer = GetPackageSerializer(package, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -55,7 +57,10 @@ def get_languages(request):
 
 @api_view(['GET'])
 def get_packages(request):
-    query = Package.objects.all()
+    query = Package.objects.exclude(private=True)
+
+    if request.user.is_authenticated:
+        query = Package.objects.all()
 
     if request.GET.get('language', None):
         query = query.filter(language=request.GET['language'])

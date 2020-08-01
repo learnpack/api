@@ -17,6 +17,7 @@ class UserSerializer(serpy.Serializer):
     # Use a Field subclass like IntField if you need more validation.
     id = serpy.Field()
     email = serpy.Field()
+    username = serpy.Field()
     first_name = serpy.Field()
     last_name = serpy.Field()
     github = serpy.MethodField()
@@ -62,3 +63,22 @@ class AuthSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
+
+class RegistrationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["username", "first_name", "last_name", "email", "password"]
+    
+        def save():
+            user = User(
+                username= self.validated_data["username"],
+                first_name= self.validated_data["first_name"],
+                last_name= self.validated_data["last_name"],
+                email= self.validated_data["email"],
+                password= self.validated_data["password"]
+            )
+            
+            user.set_password(password)
+            user.save()
+            return user

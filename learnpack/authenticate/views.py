@@ -1,4 +1,5 @@
 import os, requests, base64, logging
+from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.http import HttpResponseRedirect, HttpResponse
@@ -8,7 +9,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from django.contrib.auth.models import User, Group, AnonymousUser
 from .models import CredentialsGithub
-from .serializers import UserSerializer, AuthSerializer, GroupSerializer
+from rest_framework import status, exceptions
+from .serializers import UserSerializer, AuthSerializer, GroupSerializer, RegistrationSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
 from urllib.parse import urlencode
 
@@ -25,6 +27,36 @@ class CustomAuthToken(ObtainAuthToken):
             'user_id': user.pk,
             'email': user.email
         })
+
+class UserView(APIView):
+    def get(self, request, id):
+        user = User.objects.filter(id=id).first()
+        if user is None:
+            raise exceptions.NotFound(detail="User not found", code=status.HTTP_404_NOT_FOUND)
+        serializer = UserSerializer(user, many=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, id):
+        user = User.objects.filter(id=id).first()
+        if user is None:
+            raise exceptions.NotFound(detail="User not found", code=status.HTTP_404_NOT_FOUND)
+
+        serializer = RegistrationSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, id):
+        user = User.objects.filter(id=id).first()
+        if user is not None:
+            raise exceptions.NotFound(detail="User already exists", code=status.HTTP_400_BAD_REQUEST)
+        
+        serializer = RegistrationSerializer(data=request.data, context = {"request": request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def get_users_me(request):
