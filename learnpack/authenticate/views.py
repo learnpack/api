@@ -47,16 +47,6 @@ class UserView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request, id):
-        user = User.objects.filter(id=id).first()
-        if user is not None:
-            raise exceptions.NotFound(detail="User already exists", code=status.HTTP_400_BAD_REQUEST)
-        
-        serializer = RegistrationSerializer(data=request.data, context = {"request": request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def get_users_me(request):
@@ -71,6 +61,15 @@ def get_users_me(request):
 
     users = UserSerializer(request.user)
     return Response(users.data)
+
+@api_view(['POST',])
+def sign_up(request):
+    serializer = RegistrationSerializer(data= request.data)
+    if serializer.is_valid(): 
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 # Create your views here.
 @api_view(['GET'])

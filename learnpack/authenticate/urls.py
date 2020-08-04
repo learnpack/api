@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from .views import (
-    get_users, get_users_me, get_groups, CustomAuthToken, get_github_token, save_github_token, UserView
+    get_users, get_users_me, get_groups, CustomAuthToken, get_github_token, save_github_token, UserView, sign_up
 )
 from rest_framework.authtoken import views
 
@@ -26,6 +26,7 @@ urlpatterns = [
     path('user/me', get_users_me, name="user_me"),
     path('group/', get_groups),
     path('token/', CustomAuthToken.as_view()),
+    path('signup/', sign_up, name="sign_up"),
     path('<str:id>', UserView.as_view()),
     
     path('github/', get_github_token),
