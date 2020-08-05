@@ -43,6 +43,28 @@ class PackageView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class UnspecifiedPackageView(APIView):
+    def get(self, request):
+        query = Package.objects.exclude(private=True)
+        if request.user.is_authenticated:
+            query = Package.objects.all()
+        if request.GET.get('language', None):
+            query = query.filter(language=request.GET['language'])
+        if request.GET.get('technology', None):
+            query = query.filter(technology=request.GET['technology'])
+        serializer = GetPackageSerializer(query, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def post(self, request):
+        serializer = PostPackageSerializer(data=request.data, context = {"request": request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
 @api_view(['GET'])
 def get_technologies(request):
     items = Technology.objects.all()
@@ -55,18 +77,3 @@ def get_languages(request):
     serializer = GetLanguageSerializer(items, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
-@api_view(['GET'])
-def get_packages(request):
-    query = Package.objects.exclude(private=True)
-
-    if request.user.is_authenticated:
-        query = Package.objects.all()
-
-    if request.GET.get('language', None):
-        query = query.filter(language=request.GET['language'])
-
-    if request.GET.get('technology', None):
-        query = query.filter(technology=request.GET['technology'])
-
-    serializer = GetPackageSerializer(query, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)

@@ -24,7 +24,7 @@ class Package(models.Model):
     difficulty = models.CharField(max_length=30, blank=True,null=True, default=None)
     video_solutions = models.BooleanField(default=False)
     graded = models.BooleanField(default=False)
-    private = models.BooleanField(default=False)
+    private = models.BooleanField(default=True)
 
     technology = models.ForeignKey('Technology',on_delete=models.SET_NULL,null=True)
     language = models.ForeignKey('Language',on_delete=models.SET_NULL,null=True)
