@@ -5,6 +5,7 @@ from .serializers import (
     PostPackageSerializer,
 ) 
 from rest_framework.decorators import api_view
+from .pagination import HeaderLimitOffsetPagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, exceptions
@@ -32,18 +33,9 @@ class PackageView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request, slug):
-        package = Package.objects.filter(slug=slug).first()
-        if package is not None:
-            raise exceptions.NotFound(detail="Package already exists", code=status.HTTP_400_BAD_REQUEST)
-        
-        serializer = PostPackageSerializer(data=request.data, context = {"request": request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
-class UnspecifiedPackageView(APIView):
+class UnspecifiedPackageView(APIView, HeaderLimitOffsetPagination):
     def get(self, request):
         query = Package.objects.exclude(private=True)
         if request.user.is_authenticated:
@@ -52,8 +44,14 @@ class UnspecifiedPackageView(APIView):
             query = query.filter(language=request.GET['language'])
         if request.GET.get('technology', None):
             query = query.filter(technology=request.GET['technology'])
-        serializer = GetPackageSerializer(query, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        paginator = HeaderLimitOffsetPagination()
+        page = paginator.paginate_queryset(query, request)
+        print("PAGE: ", page)
+        serializer = GetPackageSerializer(page, many=True)
+        if page is not None:
+            return paginator.get_paginated_response(serializer.data)
+        else:
+            return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request):
         serializer = PostPackageSerializer(data=request.data, context = {"request": request})
