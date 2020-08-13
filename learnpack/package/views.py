@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework import status, exceptions
 from django.contrib.auth.models import User, Group, AnonymousUser
 from rest_framework.exceptions import APIException, ValidationError, PermissionDenied
+from learnpack.email import send_email_message
 
 class PackageView(APIView):
     def get(self, request, slug):

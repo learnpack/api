@@ -1,6 +1,7 @@
 import serpy
 from .models import Package, Technology, Language
 from rest_framework import serializers
+from learnpack.email import send_email_message
 
 class GetTechnologySerializer(serpy.Serializer):
     title = serpy.Field()
@@ -48,4 +49,6 @@ class PostPackageSerializer(serializers.ModelSerializer):
         print(self.context)
         print(validated_data)
         package = super(PostPackageSerializer, self).create(validated_data)
+        slug = package.slug
+        send_email_message("package_success", self.context['request'].user.email, data= {"link": f"/v1/package/{slug}", "subject":"Package Successfully Uploaded"})
         return package

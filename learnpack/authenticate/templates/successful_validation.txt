@@ -1,0 +1,6 @@
+Success!
+
+Your email was successfully validated! Click here or copy the link into your browser to start using LearnPack.
+{{LINK}}
+
+LearnPack

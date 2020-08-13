@@ -13,8 +13,29 @@ from rest_framework import status, exceptions
 from .serializers import UserSerializer, AuthSerializer, GroupSerializer, RegistrationSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
 from urllib.parse import urlencode
-
+from learnpack.email import get_template_content, send_email_message
 logger = logging.getLogger('authenticate')
+
+
+class EmailView(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, slug):
+        template = get_template_content(slug, data={"subject": "Validate Email", "link": "https://github.com/JobCore/api/blob/master/api/utils/email.py"})
+        return HttpResponse(template['html'])
+
+
+class ValidateEmailView(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, token):
+        print(token)
+        user = User.objects.filter(auth_token=token).first()
+        print(user)
+        #user = token.user
+        user.is_active = True
+        user.save()
+        template = get_template_content('successful_validation', data={"link": "/v1/package", "subject":"Successful Validation"})
+        return HttpResponse(template['html'])
+
 
 class CustomAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
@@ -40,7 +61,6 @@ class UserView(APIView):
         user = User.objects.filter(id=id).first()
         if user is None:
             raise exceptions.NotFound(detail="User not found", code=status.HTTP_404_NOT_FOUND)
-
         serializer = RegistrationSerializer(user, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -63,8 +83,9 @@ def get_users_me(request):
     return Response(users.data)
 
 @api_view(['POST',])
+@permission_classes([AllowAny])
 def sign_up(request):
-    serializer = RegistrationSerializer(data= request.data)
+    serializer = RegistrationSerializer(data= request.data, context= {"request": request})
     if serializer.is_valid(): 
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
