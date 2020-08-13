@@ -1,0 +1,6 @@
+Success!
+
+Your package was successfully uploaded! Click here or copy the link into your browser to see it.
+{{LINK}}
+
+LearnPack
