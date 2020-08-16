@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from learnpack.email import send_email_message
+from django.contrib.auth.hashers import make_password
 
 class GithubSmallSerializer(serpy.Serializer):
     """The serializer schema definition."""
@@ -71,10 +72,17 @@ class RegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["username", "first_name", "last_name", "email", "password"]
+
     def validate(self, data):
-        if User.objects.filter(email= data["email"]).first() is not None:
-            raise serializers.ValidationError("That email is already in use.")
+        print("VALIDATE CALLED")
+        user = self.context['request'].user
+        print(user)
+        if user is None:
+            if User.objects.filter(email= data["email"]).first() is not None:
+                raise serializers.ValidationError("That email is already in use.")
+        print (data)
         return data
+
     def create(self, validated_data):
         print("CALLING CREATE METHOD")
         user = User(
@@ -87,20 +95,29 @@ class RegistrationSerializer(serializers.ModelSerializer):
         
         if "last_name" in validated_data:
             user.first_name = validated_data["last_name"]    
-        
+        user.set_password(user.password)
         user.save()
         token, created = Token.objects.get_or_create(user=user)
         send_email_message("email_validation_link", user.email, data={"link": f"/v1/auth/email/validate/{token}", "subject": "Validate Email"})
         return user
         
-    def update(self, validated_data):
-        _user = self.context['request'].user
-        user = super(RegistrationSerializer, self).update(_user, validated_data)
-        if _user.email != user.email:
+    def update(self, user ,validated_data):
+        _user = user
+        old_password =  _user.password
+        old_email = _user.email
+        if _user.check_password(validated_data.get('password')):
+            validated_data.pop('password')
+            user = super(RegistrationSerializer, self).update(_user, validated_data)
+        else:
+            user 
+            Token.objects.filter(user__id=user.id).delete()
+            token, created = Token.objects.get_or_create(user=user)
+            send_email_message("password_reset_link", user.email, data={"link": "/v1/auth/changepassword/", "subject":"Password reset link"})
+        if old_email != user.email:
             user.is_active = False
-            user.save()
             Token.objects.filter(user__id=user.id).delete()
             token, created = Token.objects.get_or_create(user=user)
             send_email_message("email_validation_link", user.email, data={"link": f"/v1/auth/email/validate/{token}"})
-        
+        user.save()
+        return user
         

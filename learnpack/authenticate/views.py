@@ -23,14 +23,12 @@ class EmailView(APIView):
         template = get_template_content(slug, data={"subject": "Validate Email", "link": "https://github.com/JobCore/api/blob/master/api/utils/email.py"})
         return HttpResponse(template['html'])
 
-
 class ValidateEmailView(APIView):
     permission_classes = [AllowAny]
     def get(self, request, token):
         print(token)
         user = User.objects.filter(auth_token=token).first()
         print(user)
-        #user = token.user
         user.is_active = True
         user.save()
         template = get_template_content('successful_validation', data={"link": "/v1/package", "subject":"Successful Validation"})
@@ -61,7 +59,7 @@ class UserView(APIView):
         user = User.objects.filter(id=id).first()
         if user is None:
             raise exceptions.NotFound(detail="User not found", code=status.HTTP_404_NOT_FOUND)
-        serializer = RegistrationSerializer(user, data=request.data)
+        serializer = RegistrationSerializer(user, data=request.data, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -85,6 +83,7 @@ def get_users_me(request):
 @api_view(['POST',])
 @permission_classes([AllowAny])
 def sign_up(request):
+    print (permission_classes)
     serializer = RegistrationSerializer(data= request.data, context= {"request": request})
     if serializer.is_valid(): 
         serializer.save()
