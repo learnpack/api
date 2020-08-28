@@ -4,7 +4,7 @@ from .models import CredentialsGithub
 from django.db import models
 from django.contrib.auth import authenticate
 from rest_framework import serializers
-from rest_framework.authtoken.models import Token
+from .models import Token
 from learnpack.email import send_email_message
 from django.contrib.auth.hashers import make_password
 
@@ -40,7 +40,7 @@ class GroupSerializer(serpy.Serializer):
 
 
 class AuthSerializer(serializers.Serializer):
-    username = serializers.CharField(label="Username")
+    identification = serializers.CharField(label="Username or email address")
     password = serializers.CharField(
         label="Password",
         style={'input_type': 'password'},
@@ -48,11 +48,18 @@ class AuthSerializer(serializers.Serializer):
     )
 
     def validate(self, attrs):
-        username = attrs.get('username')
+        identification = attrs.get('identification')
         password = attrs.get('password')
-        print(username, "username", password, "Password" )
-        if username and password:
-            user = authenticate(request=self.context.get('request'),username=username, password=password)
+        if identification and password:
+            if "@" in identification:
+                email = identification
+                _user = User.objects.filter(email= email).first() 
+                    
+                user = authenticate(request=self.context.get('request'),username=_user.username, password=password)
+                print(user)
+            else:
+                username = identification
+                user = authenticate(request=self.context.get('request'),username=username, password=password)
 
             # The authenticate call simply returns None for is_active=False
             # users. (Assuming the default ModelBackend authentication
@@ -61,9 +68,8 @@ class AuthSerializer(serializers.Serializer):
                 msg = 'Unable to log in with provided credentials.'
                 raise serializers.ValidationError(msg, code=403)
         else:
-            msg = 'Must include "username" and "password".'
+            msg = 'Must include "username/email" and "password".'
             raise serializers.ValidationError(msg, code=403)
-
         attrs['user'] = user
         return attrs
 
@@ -77,7 +83,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         print("VALIDATE CALLED")
         user = self.context['request'].user
         print(user)
-        if user is None:
+        if user.is_anonymous:
             if User.objects.filter(email= data["email"]).first() is not None:
                 raise serializers.ValidationError("That email is already in use.")
         print (data)
@@ -96,8 +102,10 @@ class RegistrationSerializer(serializers.ModelSerializer):
         if "last_name" in validated_data:
             user.first_name = validated_data["last_name"]    
         user.set_password(user.password)
+        user.is_active = False
         user.save()
-        token, created = Token.objects.get_or_create(user=user)
+        print("USER IS ACTIVE: ", user.is_active)
+        token, created = Token.objects.get_or_create(user=user, token_type="login")
         send_email_message("email_validation_link", user.email, data={"link": f"/v1/auth/email/validate/{token}", "subject": "Validate Email"})
         return user
         
@@ -109,14 +117,13 @@ class RegistrationSerializer(serializers.ModelSerializer):
             validated_data.pop('password')
             user = super(RegistrationSerializer, self).update(_user, validated_data)
         else:
-            user 
             Token.objects.filter(user__id=user.id).delete()
-            token, created = Token.objects.get_or_create(user=user)
+            token, created = Token.objects.get_or_create(user=user, token_type="temporal")
             send_email_message("password_reset_link", user.email, data={"link": "/v1/auth/changepassword/", "subject":"Password reset link"})
         if old_email != user.email:
             user.is_active = False
             Token.objects.filter(user__id=user.id).delete()
-            token, created = Token.objects.get_or_create(user=user)
+            token, created = Token.objects.get_or_create(user=user, token_type="temporal")
             send_email_message("email_validation_link", user.email, data={"link": f"/v1/auth/email/validate/{token}"})
         user.save()
         return user

@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
 
     'rest_framework',
-    'rest_framework.authtoken',
+
 
     'phonenumber_field',
 
@@ -59,7 +59,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 1,
     'DEFAULT_VERSION': 'v1',
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+        'learnpack.authenticate.authentication.ExpiringTokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -200,7 +200,7 @@ else:
     # Honor the 'X-Forwarded-Proto' header for request.is_secure()
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-EMAIL_NOTIFICATIONS_ENABLED = (os.environ.get('ENABLE_NOTIFICATIONS') == 'TRUE')
+EMAIL_NOTIFICATIONS_ENABLED = (os.environ.get('ENABLE_NOTIFICATIONS') == "TRUE")
 _locals = locals()
 django_heroku.settings(_locals)
 _locals['DATABASES']['default'] = dj_database_url.config(conn_max_age=django_heroku.MAX_CONN_AGE, ssl_require=ssl_require)

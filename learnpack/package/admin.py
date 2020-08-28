@@ -15,3 +15,4 @@ class TechnologyAdmin(admin.ModelAdmin):
 class LanguageAdmin(admin.ModelAdmin):
     list_display = ('slug', 'title')
     actions = []
+

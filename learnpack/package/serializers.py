@@ -44,11 +44,22 @@ class PostPackageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Package
         exclude = ("author",)
+    def validate(self, data):
+        if self.context['request'].method == 'POST':
+            if Package.objects.filter(slug= data["slug"]).first() is not None:
+                raise serializers.ValidationError("That slug is already in use.")
+        if not self.context['request'].user.is_active:
+            raise serializers.ValidationError("You need to validate your email to post/update a package", code=401)
+        return data
     def create(self, validated_data):
         validated_data["author"]=self.context['request'].user
-        print(self.context)
-        print(validated_data)
         package = super(PostPackageSerializer, self).create(validated_data)
         slug = package.slug
         send_email_message("package_success", self.context['request'].user.email, data= {"link": f"/v1/package/{slug}", "subject":"Package Successfully Uploaded"})
+        return package
+
+    def update(self, package ,validated_data):
+        _package = package
+        package = super(PostPackageSerializer, self).update(_package, validated_data)
+        package.save()
         return package

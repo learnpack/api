@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from django.http import HttpResponseRedirect, HttpResponse
 from django.conf import settings
 from rest_framework.exceptions import APIException, ValidationError, PermissionDenied
-from rest_framework.authtoken.models import Token
+from .models import Token
 from rest_framework.permissions import AllowAny
 from django.contrib.auth.models import User, Group, AnonymousUser
 from .models import CredentialsGithub
@@ -55,9 +55,22 @@ class UserView(APIView):
         serializer = UserSerializer(user, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def put(self, request, id):
-        user = User.objects.filter(id=id).first()
-        if user is None:
+class UserMeView(APIView):
+    def get_users_me(self, request):
+        logger.error("Get me just called")
+        try:
+            if isinstance(request.user, AnonymousUser):
+                raise PermissionDenied("There is not user")    
+            request.user
+        except User.DoesNotExist:
+            raise PermissionDenied("You don't have a user")
+
+        users = UserSerializer(request.user)
+        return Response(users.data)
+
+    def put(self, request):
+        user = request.user
+        if user.is_anonymous:
             raise exceptions.NotFound(detail="User not found", code=status.HTTP_404_NOT_FOUND)
         serializer = RegistrationSerializer(user, data=request.data, context={"request": request})
         if serializer.is_valid():
@@ -65,20 +78,6 @@ class UserView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-@api_view(['GET'])
-def get_users_me(request):
-
-    logger.error("Get me just called")
-    try:
-        if isinstance(request.user, AnonymousUser):
-            raise PermissionDenied("There is not user")    
-        request.user
-    except User.DoesNotExist:
-        raise PermissionDenied("You don't have a user")
-
-    users = UserSerializer(request.user)
-    return Response(users.data)
 
 @api_view(['POST',])
 @permission_classes([AllowAny])

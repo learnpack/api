@@ -24,11 +24,12 @@ class PackageView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, slug):
+        print("View called")
         package = Package.objects.filter(slug=slug).first()
         if package is None:
             raise exceptions.NotFound(detail="Package not found", code=status.HTTP_404_NOT_FOUND)
-
-        serializer = PostPackageSerializer(package, data=request.data)
+        print("package exists")
+        serializer = PostPackageSerializer(package, data=request.data, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

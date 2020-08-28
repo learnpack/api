@@ -35,3 +35,18 @@ P.D: Remember that every time you make a change on your models.py you will have 
 ```
 $ pipenv run start
 ```
+
+
+
+2. cuando me intento logguear debería pasar email y password
+
+4. si me logueo exitosamente, debería crearse un token
+
+5. si intento cambiar mi password con un token ya expirado, debería dar error
+
+6. si intento cambiar mi email con un token ya expirado, debería dar error 
+
+7. implementar token temporal
+
+
+

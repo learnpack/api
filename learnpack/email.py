@@ -8,10 +8,9 @@ import requests
 
 
 def send_email_message(slug, to, data={}):
-    print('Email notification '+slug+' sent')
     if settings.EMAIL_NOTIFICATIONS_ENABLED:
-        template = get_template_content(slug, data, ["email"])
         print('ENABLED')
+        template = get_template_content(slug, data, ["email"])
         return requests.post(
             f"https://api.mailgun.net/v3/{os.environ.get('MAILGUN_DOMAIN')}/messages",
             auth=(
