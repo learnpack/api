@@ -52,7 +52,7 @@ class AuthenticateTestSuite(TestCase):
         response = self.client.post(url, data={"username":self.user.username, "password":"pass1234", "email": self.user.email})
         response_json = response.json()
         print(response_json)
-        self.assertEquals(response.status_code, 400, "Same email/username should trigger error")
+        self.assertEqual(response.status_code, 400, "Same email/username should trigger error")
 
     def test_put_username(self):
         url = reverse('authenticate:user_me')
@@ -63,7 +63,7 @@ class AuthenticateTestSuite(TestCase):
         response_json = response.json()
         print(response_json, "RESPONSE")
         print("STATUS: ", response.status_code)
-        self.assertEquals(response.status_code, 200, "Post request with change to username should not trigger error")
+        self.assertEqual(response.status_code, 200, "Post request with change to username should not trigger error")
 
     def test_put_password(self):
         url = reverse_lazy('authenticate:user_me')
@@ -72,7 +72,7 @@ class AuthenticateTestSuite(TestCase):
         response = self.client.put(url, data={"username":self.user.username, "password":"pass234", "email": self.user.email})
         response_json = response.json()
         print(response_json)
-        self.assertEquals(response.status_code, 200, "Post request with change to password should not trigger error")
+        self.assertEqual(response.status_code, 200, "Post request with change to password should not trigger error")
             
 
     def test_put_email(self):
@@ -82,7 +82,7 @@ class AuthenticateTestSuite(TestCase):
         response = self.client.put(url, data={"username":self.user.username, "password":"pass1234", "email": "bob@example.com"})
         response_json = response.json()
         print(response_json)
-        self.assertEquals(response.status_code, 200, "Post request with change to email should not trigger error")
+        self.assertEqual(response.status_code, 200, "Post request with change to email should not trigger error")
 
     
 

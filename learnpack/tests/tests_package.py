@@ -8,7 +8,7 @@ from django.urls.base import reverse_lazy, reverse
 from mixer.backend.django import mixer
 from rest_framework.test import force_authenticate, APIClient
 from django.contrib.auth.models import User, Group
-from .models import Package
+from learnpack.package.models import Package
 
 
 # Create your tests here.
@@ -25,7 +25,7 @@ class PackageTestSuite(TestCase):
         self.package.save()
 
     def test_post_or_put_not_active(self):
-        url = reverse("package:unspecified_package")
+        url = reverse_lazy("package:unspecified_package", current_app = "package")
         print(url)
         response = self.client.post(url, data={"slug":"python_conditionals", "title":"Password Conditionals", "repository": "https://aa131184-73fa-4af1-aa96-4345e0d6d184.ws-us02.gitpod.io/#/workspace/api"})
         response_json = response.json()
