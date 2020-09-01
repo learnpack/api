@@ -39,6 +39,6 @@ urlpatterns = [
     url(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     url(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('admin/', admin.site.urls),
-    path('v1/auth/', include('learnpack.authenticate.urls', namespace='v1')),
-    path('v1/package/', include('learnpack.package.urls', namespace='v1')),
+    path('v1/auth/', include('learnpack.authenticate.urls', namespace='authenticate')),
+    path('v1/package/', include('learnpack.package.urls', namespace='package')),
 ]

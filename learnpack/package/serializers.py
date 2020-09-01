@@ -8,6 +8,11 @@ class GetTechnologySerializer(serpy.Serializer):
     slug = serpy.Field()
     total_packages = serpy.Field()
 
+class GetSkillSerializer(serpy.Serializer):
+    title = serpy.Field()
+    slug = serpy.Field()
+    total_packages = serpy.Field()
+
 class GetLanguageSerializer(serpy.Serializer):
     title = serpy.Field()
     slug = serpy.Field()

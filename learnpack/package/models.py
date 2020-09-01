@@ -28,6 +28,7 @@ class Package(models.Model):
 
     technology = models.ForeignKey('Technology',on_delete=models.SET_NULL,null=True)
     language = models.ForeignKey('Language',on_delete=models.SET_NULL,null=True)
+    skills = models.ForeignKey('Skill',on_delete=models.SET_NULL,null=True)
     author = models.ForeignKey('auth.User',on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
@@ -45,6 +46,14 @@ class Language(models.Model):
         return self.title
 
 class Technology(models.Model):
+    slug = models.SlugField(max_length=15, primary_key=True)
+    title = models.CharField(max_length=150)
+    total_packages = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.title
+
+class Skill(models.Model):
     slug = models.SlugField(max_length=15, primary_key=True)
     title = models.CharField(max_length=150)
     total_packages = models.PositiveIntegerField(default=0)

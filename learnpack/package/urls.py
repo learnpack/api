@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from .views import (
-    UnspecifiedPackageView, get_technologies, get_languages, PackageView)
+    UnspecifiedPackageView, get_technologies, get_languages, PackageView, get_skills)
 from rest_framework.authtoken import views
 
 from django.contrib.auth import views as auth_views
@@ -25,8 +25,9 @@ from learnpack.authenticate import templates
 app_name='package'
 urlpatterns = [
     path('', UnspecifiedPackageView.as_view(), name="unspecified_package"),
-    path('technology', get_technologies),
-    path('language', get_languages),
+    path('technology', get_technologies, name="get_technologies"),
+    path('language', get_languages, name="get_languages"),
+    path('skill', get_skills, name="get_skills"),
     path('<str:slug>', PackageView.as_view(), name="specific_package"),
 ]
 

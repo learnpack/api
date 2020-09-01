@@ -1,8 +1,8 @@
 from django.shortcuts import render
-from .models import Package, Technology, Language
+from .models import Package, Technology, Language, Skill
 from .serializers import (
     GetPackageSerializer, GetTechnologySerializer, GetLanguageSerializer,
-    PostPackageSerializer,
+    PostPackageSerializer, GetSkillSerializer
 ) 
 from rest_framework.decorators import api_view
 from .pagination import HeaderLimitOffsetPagination
@@ -77,3 +77,8 @@ def get_languages(request):
     serializer = GetLanguageSerializer(items, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+@api_view(['GET'])
+def get_skills(request):
+    items = Skill.objects.all()
+    serializer = GetSkillSerializer(items, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)

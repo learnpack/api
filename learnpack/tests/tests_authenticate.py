@@ -82,6 +82,9 @@ class AuthenticateTestSuite(TestCase):
         response = self.client.put(url, data={"username":self.user.username, "password":"pass1234", "email": "bob@example.com"})
         response_json = response.json()
         print(response_json)
+        active = User.objects.get(id=self.user.id).is_active
+        print ("Active: ", active)
+        self.assertEqual(active, False, "Is active should return false before authenticating email")
         self.assertEqual(response.status_code, 200, "Post request with change to email should not trigger error")
 
     
