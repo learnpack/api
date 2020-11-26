@@ -4,7 +4,8 @@ from .serializers import (
     GetPackageSerializer, GetTechnologySerializer, GetLanguageSerializer,
     PostPackageSerializer, GetSkillSerializer
 ) 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from .pagination import HeaderLimitOffsetPagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -66,18 +67,21 @@ class UnspecifiedPackageView(APIView, HeaderLimitOffsetPagination):
 
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def get_technologies(request):
     items = Technology.objects.all()
     serializer = GetTechnologySerializer(items, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def get_languages(request):
     items = Language.objects.all()
     serializer = GetLanguageSerializer(items, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def get_skills(request):
     items = Skill.objects.all()
     serializer = GetSkillSerializer(items, many=True)
