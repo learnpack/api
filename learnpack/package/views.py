@@ -25,11 +25,9 @@ class PackageView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, slug):
-        print("View called")
         package = Package.objects.filter(slug=slug).first()
         if package is None:
             raise exceptions.NotFound(detail="Package not found", code=status.HTTP_404_NOT_FOUND)
-        print("package exists")
         serializer = PostPackageSerializer(package, data=request.data, context={"request": request})
         if serializer.is_valid():
             serializer.save()
@@ -39,23 +37,35 @@ class PackageView(APIView):
     
 
 class UnspecifiedPackageView(APIView, HeaderLimitOffsetPagination):
+    permission_classes = [AllowAny]
     def get(self, request):
         query = Package.objects.exclude(private=True)
         if request.user.is_authenticated:
             query = Package.objects.all()
-        if request.GET.get('language', None):
-            query = query.filter(language=request.GET['language'])
-        if request.GET.get('technology', None):
-            query = query.filter(technology=request.GET['technology'])
+
+        lang = request.GET.get('language', '')
+        if lang != '':
+            query = query.filter(language__slug=lang)
+        
+        tech = request.GET.get('technology', '')
+        if tech != '':
+            print("Filtering by tech -"+tech+"-")
+            query = query.filter(technology__slug=tech)
+
+        slug = request.GET.get('slug', '')
+        if slug != '':
+            query = query.filter(slug=slug)
+
         paginator = HeaderLimitOffsetPagination()
         page = paginator.paginate_queryset(query, request)
-        print("PAGE: ", page)
+
         serializer = GetPackageSerializer(page, many=True)
         if page is not None:
             return paginator.get_paginated_response(serializer.data)
         else:
             return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
+class PostPackageView(APIView, HeaderLimitOffsetPagination):
     def post(self, request):
         serializer = PostPackageSerializer(data=request.data, context = {"request": request})
         if serializer.is_valid():

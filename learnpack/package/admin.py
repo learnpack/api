@@ -1,7 +1,7 @@
 import requests, base64, re, json
 from django.contrib import admin
 from django.contrib import messages
-from .models import Package, Technology, Language
+from .models import Package, Technology, Language, Skill
 # Register your models here.
 @admin.register(Package)
 class PackageAdmin(admin.ModelAdmin):
@@ -13,6 +13,11 @@ class TechnologyAdmin(admin.ModelAdmin):
 
 @admin.register(Language)
 class LanguageAdmin(admin.ModelAdmin):
+    list_display = ('slug', 'title')
+    actions = []
+
+@admin.register(Skill)
+class SkillAdmin(admin.ModelAdmin):
     list_display = ('slug', 'title')
     actions = []
 
