@@ -26,8 +26,8 @@ class Package(models.Model):
     graded = models.BooleanField(default=False)
     private = models.BooleanField(default=True)
 
-    technology = models.ForeignKey('Technology',on_delete=models.SET_NULL,null=True)
-    language = models.ForeignKey('Language',on_delete=models.SET_NULL,null=True)
+    technology = models.ForeignKey('Technology',on_delete=models.SET_NULL, blank=True,null=True, default=None)
+    language = models.ForeignKey('Language',on_delete=models.SET_NULL, blank=True,null=True, default=None)
     skills = models.ForeignKey('Skill',on_delete=models.SET_NULL,null=True)
     author = models.ForeignKey('auth.User',on_delete=models.CASCADE)
 

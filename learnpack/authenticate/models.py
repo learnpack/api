@@ -58,6 +58,17 @@ class Token(rest_framework.authtoken.models.Token):
     def create_temp(user):
         token, created = Token.objects.get_or_create(user=user, token_type= "temporal")
         return token
+
+    def get_or_create(user):
+        token, created = Token.objects.get_or_create(user=user)
+
+        if not created:
+            now = timezone.now()
+            if token.expires_at < now:
+                token.delete()
+                token = Token.objects.create(user=user)
+
+        return token
     
     def get_valid(token, token_type="temporal"):
         utc_now = timezone.now()
