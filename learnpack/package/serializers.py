@@ -31,6 +31,7 @@ class GetPackageSerializer(serpy.Serializer):
     slug = serpy.Field()
     description = serpy.Field()
     repository = serpy.Field()
+    difficulty = serpy.Field()
     technology = serpy.MethodField()
     skills = serpy.MethodField()
     language = serpy.MethodField()
