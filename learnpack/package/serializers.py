@@ -31,8 +31,9 @@ class GetPackageSerializer(serpy.Serializer):
     slug = serpy.Field()
     description = serpy.Field()
     repository = serpy.Field()
-    technology = GetTechnologySerializer(required= False)
-    language = GetLanguageSerializer(required = False)
+    technology = serpy.MethodField()
+    skills = serpy.MethodField()
+    language = serpy.MethodField()
     author = GetAuthorSerializer()
     # technology = serpy.MethodField()
     # language = serpy.MethodField()
@@ -42,9 +43,21 @@ class GetPackageSerializer(serpy.Serializer):
     #     technology = Technology.objects.filter(slug=obj.technology_slug).first()
     #     return GetTechnology(technology).data
 
-    # def get_language(self, obj):
-    #     language = Language.objects.filter(slug=obj.language_slug).first()
-    #     return GetLanguage(language).data
+    def get_skills(self, obj):
+        all_skills = obj.skills.all()
+        return [s.slug for s in all_skills]
+
+    def get_language(self, obj):
+        if obj.language is not None:
+            return obj.language.slug
+        else:
+            return None
+
+    def get_technology(self, obj):
+        if obj.technology is not None:
+            return obj.technology.slug
+        else:
+            return None
 
 class PostPackageSerializer(serializers.ModelSerializer):
     skills = serializers.ListField(write_only=True)
