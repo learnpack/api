@@ -28,7 +28,9 @@ class Package(models.Model):
 
     technology = models.ForeignKey('Technology',on_delete=models.SET_NULL, blank=True,null=True, default=None)
     language = models.ForeignKey('Language',on_delete=models.SET_NULL, blank=True,null=True, default=None)
-    skills = models.ManyToManyField('Skill',null=True)
+
+    skills = models.ManyToManyField('Skill')
+    
     author = models.ForeignKey('auth.User',on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(auto_now_add=True, editable=False)

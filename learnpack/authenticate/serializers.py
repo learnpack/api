@@ -5,6 +5,7 @@ from django.db import models
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 from .models import Token
+from learnpack.utils import ValidationException
 from learnpack.email import send_email_message
 from django.contrib.auth.hashers import make_password
 
@@ -54,7 +55,8 @@ class AuthSerializer(serializers.Serializer):
             if "@" in identification:
                 email = identification
                 _user = User.objects.filter(email= email).first() 
-                    
+                if _user is None:
+                    raise ValidationException("User with that email and password not found")
                 user = authenticate(request=self.context.get('request'),username=_user.username, password=password)
                 print(user)
             else:

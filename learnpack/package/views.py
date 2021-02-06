@@ -49,7 +49,6 @@ class UnspecifiedPackageView(APIView, HeaderLimitOffsetPagination):
         
         tech = request.GET.get('technology', '')
         if tech != '':
-            print("Filtering by tech -"+tech+"-")
             query = query.filter(technology__slug=tech)
 
         slug = request.GET.get('slug', '')
