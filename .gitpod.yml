@@ -14,4 +14,4 @@ tasks:
         psql -U gitpod -c 'CREATE DATABASE learnpack;';
         psql -U gitpod -c 'CREATE EXTENSION unaccent;' -d learnpack;
         pipenv run migrate;
-        pipenv run python manage.py loaddata breathecode/*/fixtures/*.json;
+        pipenv run python manage.py loaddata learnpack/*/fixtures/*.json;

@@ -41,4 +41,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('v1/auth/', include('learnpack.authenticate.urls', namespace='authenticate')),
     path('v1/package/', include('learnpack.package.urls', namespace='package')),
+    path('v1/support/', include('learnpack.support.urls', namespace='support')),
 ]

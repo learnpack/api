@@ -21,6 +21,7 @@ schema = "*"
 mixer = "*"
 pytest-django = "*"
 pyyaml = "*"
+martor = "*"
 
 [requires]
 python_version = "3.8"

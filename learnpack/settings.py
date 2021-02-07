@@ -46,9 +46,12 @@ INSTALLED_APPS = [
 
     'drf_yasg',
     'corsheaders',
+
+    'martor',
     
     'learnpack.authenticate',
     'learnpack.package',
+    'learnpack.support',
 ]
 
 REST_FRAMEWORK = {
