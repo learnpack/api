@@ -16,6 +16,7 @@ class FAQQuestion(models.Model):
     language = models.CharField(max_length=2, default='us')
     answer = MartorField(blank=True,null=True, default=None)
     status = models.CharField(max_length=15, choices=QUESTION_STATUS, default=DRAFT)
+    priority = models.IntegerField(default=0)
 
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)

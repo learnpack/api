@@ -32,6 +32,7 @@ class FAQQuestionView(APIView):
         if _status == '':
             _status = 'PUBLISHED'
         query = query.filter(status=_status)
+        query = query.order_by('-priority')
 
 
         serializer = GetSmallQuestionSerializer(query, many=True)

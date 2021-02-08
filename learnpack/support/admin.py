@@ -27,7 +27,8 @@ mark_as_hidden.short_description = "Mark as HIDDEN"
 
 @admin.register(FAQQuestion)
 class FAQQuestionAdmin(admin.ModelAdmin):
-    list_display = ('slug', 'title', 'status', 'language')
+    list_display = ('priority','slug', 'title', 'status', 'language')
+    ordering = ('-priority',)
     actions=[mark_as_published, mark_as_draft, mark_as_hidden]
     formfield_overrides = {
         models.TextField: {'widget': AdminMartorWidget},
