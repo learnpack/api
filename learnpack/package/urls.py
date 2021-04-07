@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from .views import (
     UnspecifiedPackageView, get_technologies, get_languages, PackageView, get_skills,
-    PostPackageView
+    PostPackageView, redirect_gitpod
 )
 from rest_framework.authtoken import views
 
@@ -31,6 +31,7 @@ urlpatterns = [
     path('technology', get_technologies, name="get_technologies"),
     path('language', get_languages, name="get_languages"),
     path('skill', get_skills, name="get_skills"),
+    path('gitpod/<str:slug>', redirect_gitpod, name="gitpod_slug"),
     path('<str:slug>', PackageView.as_view(), name="specific_package"),
 ]
 

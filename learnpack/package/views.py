@@ -4,6 +4,7 @@ from .serializers import (
     GetPackageSerializer, GetTechnologySerializer, GetLanguageSerializer,
     PostPackageSerializer, GetSkillSerializer
 ) 
+from django.http import HttpResponseRedirect
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from .pagination import HeaderLimitOffsetPagination
@@ -81,6 +82,18 @@ def get_technologies(request):
     items = Technology.objects.all()
     serializer = GetTechnologySerializer(items, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def redirect_gitpod(request, slug):
+    package = Package.objects.filter(slug=slug).first()
+    if package is None:
+        raise exceptions.NotFound(detail="Package not found", code=status.HTTP_404_NOT_FOUND)
+
+    package.downloads = package.downloads + 1
+    package.save()
+
+    return HttpResponseRedirect(redirect_to='https://gitpod.io#'+package.repository)
 
 @api_view(['GET'])
 @permission_classes([AllowAny])

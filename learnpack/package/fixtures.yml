@@ -7,6 +7,15 @@
     username: e@mail.com
     password: pbkdf2_sha256$100000$NhRd421Q6xfJ$kEnuXU5FWK0+PdCNzFaTVb6Eo/p5feam1KD5P28GvPU=
 
+- model: package.User
+  pk: 2
+  fields:
+    first_name: Super
+    last_name: Man
+    email: test@mail.com
+    username: test@mail.com
+    password: pbkdf2_sha256$100000$NhRd421Q6xfJ$kEnuXU5FWK0+PdCNzFaTVb6Eo/p5feam1KD5P28GvPU=
+
 - model: package.Language
   pk: python3
   fields:
